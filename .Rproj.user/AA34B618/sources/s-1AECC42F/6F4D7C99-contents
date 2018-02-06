@@ -1,0 +1,55 @@
+x = c(0.95, 0.9, 0.8, 0.7, 0.5, 0.3, 0.2, 0.1, 0.05, 0.01, 0.001)
+
+qchisq(x, 3)
+
+qgamma(x, shape = 6, scale = 2)
+
+
+qgamma(0.005, shape = 6, scale = 2)
+
+qchisq(x, 7)
+
+map_df(1:5, ~ qchisq(x, .x))
+
+
+plot(unlist(lapply(1:100, function(y) qchisq(0.95, y))), type = "l")
+
+
+1:100 %>% 
+  map_dbl(~ qchisq(0.95, .x)) %>% 
+  ggplot(data = .) +
+  geom_point()
+
+
+map2(.x = 1:100, .y = c(0.95, 0.9), ~ qchisq(.y, .x))
+
+crossing(ddl = 1:100, p = c(0.95, 0.9)) %>% 
+  map2(.x = .$ddl, .y = .$p, ~ qchisq(.y, .x))
+
+crossing(df = 1:100, p = c(0.95, 0.9, 0.1)) %>% 
+  invoke_map_df("qchisq", .) 
+  
+
+
+
+
+crossing(df = 1:100, p = c(0.95, 0.9, 0.1)) %>% 
+  imap(.x = list(df = df, p = p), ~ qchisq(.y, .x))
+
+
+
+df <- tibble::tibble(
+  f = c("runif", "rpois", "rnorm"),
+  params = list(
+    list(n = 10),
+    list(n = 5, lambda = 10),
+    list(n = 10, mean = -3, sd = 10)
+  )
+)
+df
+invoke_map(df$f, df$params)
+
+
+
+ggplot(data.frame(x = c(0, 8)), aes(x)) +
+  stat_function(fun = dchisq, args = list(df = 1))
